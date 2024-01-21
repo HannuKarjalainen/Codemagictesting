@@ -1,7 +1,5 @@
 plugins {
-    kotlin("android") version "1.5.21"
     kotlin("android.extensions") version "1.1.0"
-    id("com.android.application") version "7.1.3"
 }
 
 android {
