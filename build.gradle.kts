@@ -1,14 +1,28 @@
-buildscript {
-    ext {
-        compose_version = '1.0.1'
-    }
-}// Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    id 'com.android.application' version '7.1.3' apply false
-    id 'com.android.library' version '7.1.3' apply false
-    id 'org.jetbrains.kotlin.android' version '1.5.21' apply false
+    kotlin("android") version "1.5.21"
+    kotlin("android.extensions") version "1.1.0"
+    id("com.android.application") version "7.1.3"
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+android {
+    compileSdkVersion(30)
+    defaultConfig {
+        applicationId = "io.codemagic.androidquicksample"
+        minSdkVersion(16)
+        targetSdkVersion(30)
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled = false
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        }
+    }
+}
+
+dependencies {
+    implementation("androidx.compose.ui:ui:$compose_version")
+    implementation("androidx.compose.material:material:$compose_version")
+    implementation("androidx.activity:activity-compose:1.3.0")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.5.21")
 }
