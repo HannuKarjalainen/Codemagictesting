@@ -6,7 +6,7 @@ workflows:
     environment:
       vars:
         java: 17
-        PACKAGE_NAME: "com.example.androidquicksample"
+        PACKAGE_NAME: "io.codemagic.androidquicksample"
     scripts:
       - name: Set Android SDK location
         script: |
