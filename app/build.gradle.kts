@@ -3,23 +3,6 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
-// used only for local testing
-def keystoreProperties = new Properties()
-def keystorePropertiesFile = rootProject.file("key.properties")
-if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
-}
-
-// get version code from the specified property argument `-PversionCode` during the build call
-def getMyVersionCode = { ->
-    return project.hasProperty("versionCode") ? versionCode.toInteger() : -1
-}
-
-// get version name from the specified property argument `-PversionName` during the build call
-def getMyVersionName = { ->
-    return project.hasProperty("versionName") ? versionName : "1.0"
-}
-
 android {
     compileSdk = 32
 
@@ -27,47 +10,38 @@ android {
         applicationId = "io.codemagic.androidquicksample"
         minSdk = 21
         targetSdk = 32
-        versionCode = getMyVersionCode()
-        versionName = getMyVersionName()
-
+        versionCode = project.hasProperty("versionCode") ? project.versionCode.toInteger() : -1
+        versionName = project.hasProperty("versionName") ? project.versionName : "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
-    signingConfigs {
-        release {
-            if (System.getenv()["CI"]) { // CI=true is exported by Codemagic
-                storeFile = file(System.getenv()["CM_KEYSTORE_PATH"])
-                storePassword = System.getenv()["CM_KEYSTORE_PASSWORD"]
-                keyAlias = System.getenv()["CM_KEY_ALIAS"]
-                keyPassword = System.getenv()["CM_KEY_PASSWORD"]
-            } else {
-                keyAlias = keystoreProperties["keyAlias"]
-                keyPassword = keystoreProperties["keyPassword"]
-                storeFile = keystoreProperties["storeFile"] ? file(keystoreProperties["storeFile"]) : null
-                storePassword = keystoreProperties["storePassword"]
-            }
-        }
-    }
+
     buildTypes {
         release {
             minifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            signingConfig = signingConfigs.release
+            // signingConfig = signingConfigs.release  // Uncomment if signing is needed
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
     buildFeatures {
         compose = true
+        viewBinding = true  // Enable View Binding
     }
+
     composeOptions {
         kotlinCompilerExtensionVersion = compose_version
     }
+
     packagingOptions {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -83,7 +57,6 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview:$compose_version")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
     implementation("androidx.activity:activity-compose:1.3.1")
-    implementation("org.jetbrains.kotlin:kotlin-android-extensions:$kotlin_version")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
