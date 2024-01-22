@@ -1,13 +1,20 @@
 workflows:
-  build:
+  native-android:
+    name: Native Android
+    max_build_duration: 120
+    instance_type: mac_mini_m1
+    environment:
+      vars:
+        java: 17
+        PACKAGE_NAME: "com.example.androidquicksample"
     scripts:
-      - name: Set Java 17 for Gradle Daemon
-        script: echo "org.gradle.java.home=/Library/Java/JavaVirtualMachines/<path-to-your-java-17>/Contents/Home" > gradle.properties
-
-      - name: Set execute permissions for gradlew
-        script: chmod +x gradlew
-
+      - name: Set Android SDK location
+        script: |
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/local.properties"
       - name: Build Android release
-        script: ./gradlew assembleRelease
+        script: |
+          ./gradlew bundleRelease -PversionCode=$BUILD_NUMBER -PversionName=1.0.$BUILD_NUMBER
+      - name: Set execute permissions for gradlew
+        script: chmod +x ./gradlew
     artifacts:
-      - app/build/outputs/**/*.apk
+      - app/build/outputs/**/*.aab
